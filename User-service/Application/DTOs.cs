@@ -1,0 +1,9 @@
+using UserMicroService.Domain;
+
+namespace UserMicroService.Application;
+
+public class UserInfoDto
+{
+    public string Username { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
