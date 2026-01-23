@@ -8,3 +8,16 @@ public class UserInfoDto
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 }
+
+public class UserLoginCredentialDto
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public class UserRegisterCredentialDto
+{
+    public string Email { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
