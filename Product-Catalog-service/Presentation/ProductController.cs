@@ -1,41 +1,73 @@
-using ProductCatalogMicroService.Application;
 using Microsoft.AspNetCore.Mvc;
+using ProductCatalogMicroService.Application;
 
 namespace ProductCatalogMicroService.Presentation;
 
 [ApiController]
 [Route("[controller]")]
-public class ProductController(IProductService productService) : ControllerBase
+public class ProductController(
+    IProductService productService,
+    ICompanyValidationService companyValidationService
+) : ControllerBase
 {
     private readonly IProductService _productService = productService;
+    private readonly ICompanyValidationService _companyValidationService = companyValidationService;
 
-    [HttpPost]
-    public async Task<ActionResult<ProductDto>> CreateProductAsync(ProductDto info)
+    [HttpPost("{companyId}")]
+    public async Task<ActionResult<ProductDto>> CreateProductAsync(int companyId, ProductDto info)
     {
-        return Ok(await _productService.CreateProductAsync(info));
+        if (_companyValidationService.ValidateCompany(companyId))
+            return NotFound("Company not found");
+
+        return Ok(await _productService.CreateProductAsync(companyId, info));
     }
 
     [HttpGet]
-    public ActionResult<List<ProductDto>> GetAllProducts()
+    public ActionResult<List<CompanyProductsDto>> GetAllProducts()
     {
         return Ok(_productService.GetAllProducts());
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<ProductDto>? GetProductDto(int id)
+    [HttpGet("{companyId}")]
+    public ActionResult<List<CompanyProductsDto>> GetAllCompanyProducts(int companyId)
     {
-        return Ok(_productService.GetProductDto(id));
+        if (_companyValidationService.ValidateCompany(companyId))
+            return NotFound("Company not found");
+
+        return Ok(_productService.GetAllCompanyProducts(companyId));
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<ProductDto>?> UpdateProductAsync(int id, ProductDto info)
+    [HttpGet("{companyId}/{productId}")]
+    public ActionResult<ProductDto>? GetProductDto(int companyId, int productId)
     {
-        return Ok(await _productService.UpdateProductAsync(id, info));
+        if (_companyValidationService.ValidateCompany(companyId))
+            return NotFound("Company not found");
+
+        var product = _productService.GetProductDto(productId);
+        return (product != null) ? Ok(product) : NotFound("Product not found");
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<ProductDto>?> DeleteProductAsync(int id)
+    [HttpPut("{companyId}/{productId}")]
+    public async Task<ActionResult<ProductDto>?> UpdateProductAsync(
+        int companyId,
+        int productId,
+        ProductDto info
+    )
     {
-        return Ok(await _productService.DeleteProductAsync(id));
+        if (_companyValidationService.ValidateCompany(companyId))
+            return NotFound("Company not found");
+
+        var product = await _productService.UpdateProductAsync(companyId, productId, info);
+        return (product != null) ? Ok(product) : NotFound("Product not found");
+    }
+
+    [HttpDelete("{companyId}/{productId}")]
+    public async Task<ActionResult<ProductDto>?> DeleteProductAsync(int companyId, int productId)
+    {
+        if (_companyValidationService.ValidateCompany(companyId))
+            return NotFound("Company not found");
+
+        var product = await _productService.DeleteProductAsync(companyId, productId);
+        return (product != null) ? Ok(product) : NotFound("Product not found");
     }
 }
