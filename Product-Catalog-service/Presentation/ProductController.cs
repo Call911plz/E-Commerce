@@ -13,58 +13,66 @@ public class ProductController(
     private readonly IProductService _productService = productService;
     private readonly ICompanyValidationService _companyValidationService = companyValidationService;
 
-    [HttpPost("{companyId}")]
-    public async Task<ActionResult<ProductDto>> CreateProductAsync(int companyId, ProductDto info)
-    {
-        if (await _companyValidationService.ValidateCompanyAsync(companyId) == false)
-            return NotFound("Company not found");
-
-        return Ok(await _productService.CreateProductAsync(companyId, info));
-    }
-
-    [HttpGet]
-    public ActionResult<List<CompanyProductsDto>> GetAllProducts()
-    {
-        return Ok(_productService.GetAllProducts());
-    }
-
-    [HttpGet("{companyId}")]
-    public async Task<ActionResult<CompanyProductsDto>> GetAllCompanyProducts(int companyId)
-    {
-        if (await _companyValidationService.ValidateCompanyAsync(companyId) == false)
-            return NotFound("Company not found");
-
-        return Ok(await _productService.GetAllCompanyProductsAsync(companyId));
-    }
-
-    [HttpGet("{companyId}/{productId}")]
-    public async Task<ActionResult<ProductDto>?> GetProductDto(int companyId, int productId)
-    {
-        if (await _companyValidationService.ValidateCompanyAsync(companyId) == false)
-            return NotFound("Company not found");
-
-        var product = _productService.GetProductDto(productId);
-        return (product != null) ? Ok(product) : NotFound("Product not found");
-    }
-
-    [HttpPut("{companyId}/{productId}")]
-    public async Task<ActionResult<ProductDto>?> UpdateProductAsync(
-        int companyId,
-        int productId,
+    [HttpPost("{companyUuid}")]
+    public async Task<ActionResult<ProductDto>> CreateProductAsync(
+        string companyUuid,
         ProductDto info
     )
     {
-        if (await _companyValidationService.ValidateCompanyAsync(companyId) == false)
+        if (await _companyValidationService.ValidateCompanyAsync(companyUuid) == false)
             return NotFound("Company not found");
 
-        var product = await _productService.UpdateProductAsync(companyId, productId, info);
+        return Ok(await _productService.CreateProductAsync(companyUuid, info));
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<CompanyProductsDto>>> GetAllProductsAsync()
+    {
+        return Ok(await _productService.GetAllProductsAsync());
+    }
+
+    [HttpGet("{companyUuid}")]
+    public async Task<ActionResult<CompanyProductsDto>> GetAllCompanyProductsAsync(
+        string companyUuid
+    )
+    {
+        if (await _companyValidationService.ValidateCompanyAsync(companyUuid) == false)
+            return NotFound("Company not found");
+
+        return Ok(await _productService.GetAllCompanyProductsAsync(companyUuid));
+    }
+
+    [HttpGet("{companyUuid}/{productUuid}")]
+    public async Task<ActionResult<ProductDto>?> GetProductDtoAsync(
+        string companyUuid,
+        string productUuid
+    )
+    {
+        if (await _companyValidationService.ValidateCompanyAsync(companyUuid) == false)
+            return NotFound("Company not found");
+
+        var product = await _productService.GetProductDtoAsync(productUuid);
         return (product != null) ? Ok(product) : NotFound("Product not found");
     }
 
-    [HttpDelete("{productId}")]
-    public async Task<ActionResult<ProductDto>?> DeleteProductAsync(int productId)
+    [HttpPut("{companyUuid}/{productUuid}")]
+    public async Task<ActionResult<ProductDto>?> UpdateProductAsync(
+        string companyUuid,
+        string productUuid,
+        ProductDto info
+    )
     {
-        var product = await _productService.DeleteProductAsync(productId);
+        if (await _companyValidationService.ValidateCompanyAsync(companyUuid) == false)
+            return NotFound("Company not found");
+
+        var product = await _productService.UpdateProductAsync(companyUuid, productUuid, info);
+        return (product != null) ? Ok(product) : NotFound("Product not found");
+    }
+
+    [HttpDelete("{productUuid}")]
+    public async Task<ActionResult<ProductDto>?> DeleteProductAsync(string productUuid)
+    {
+        var product = await _productService.DeleteProductAsync(productUuid);
         return (product != null) ? Ok(product) : NotFound("Product not found");
     }
 }

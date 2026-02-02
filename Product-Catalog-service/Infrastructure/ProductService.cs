@@ -11,11 +11,11 @@ public class ProductService(
     private readonly IProductRepository _repo = productRepository;
     private readonly ICompanyRepository _companyRepository = companyRepository;
 
-    public async Task<ProductDto> CreateProductAsync(int companyId, ProductDto info)
+    public async Task<ProductDto> CreateProductAsync(string companyUuid, ProductDto info)
     {
         // Throwing error since validating company access should have been done before hand
         var company =
-            await _companyRepository.GetCompanyAsync(companyId)
+            await _companyRepository.GetCompanyAsync(companyUuid)
             ?? throw new Exception("Invalid company Id given");
 
         // Building product to insert
@@ -26,19 +26,21 @@ public class ProductService(
         return createdProduct.ToDto();
     }
 
-    public List<ProductDto> GetAllProducts()
+    public async Task<List<ProductDto>> GetAllProductsAsync()
     {
-        var products = _repo.GetAllProducts();
+        var products = await _repo.GetAllProductsAsync();
 
         return products.Select(product => product.ToDto()).ToList();
     }
 
-    public async Task<CompanyProductsDto> GetAllCompanyProductsAsync(int companyId)
+    public async Task<CompanyProductsDto> GetAllCompanyProductsAsync(string companyUuid)
     {
         var company =
-            await _companyRepository.GetCompanyAsync(companyId)
+            await _companyRepository.GetCompanyAsync(companyUuid)
             ?? throw new Exception("Invalid company Id given");
-        var products = _repo.GetAllProducts().Where(product => product.Company.Id == companyId);
+        var products = (await _repo.GetAllProductsAsync()).Where(product =>
+            product.Company.Uuid == companyUuid
+        );
 
         return new CompanyProductsDto()
         {
@@ -47,34 +49,38 @@ public class ProductService(
         };
     }
 
-    public ProductDto? GetProductDto(int id)
+    public async Task<ProductDto?> GetProductDtoAsync(string productUuid)
     {
-        var product = _repo.GetProduct(id);
+        var product = await _repo.GetProductAsync(productUuid);
 
         return (product == null) ? null : product.ToDto();
     }
 
-    public async Task<ProductDto?> UpdateProductAsync(int companyId, int productId, ProductDto info)
+    public async Task<ProductDto?> UpdateProductAsync(
+        string companyUuid,
+        string productUuid,
+        ProductDto info
+    )
     {
         var company =
-            await _companyRepository.GetCompanyAsync(companyId)
+            await _companyRepository.GetCompanyAsync(companyUuid)
             ?? throw new Exception("Invalid company Id given");
 
-        if (_repo.GetProduct(productId) == null)
+        if (await _repo.GetProductAsync(productUuid) == null)
             return null;
 
-        var product = info.ToProduct(company, productId);
+        var product = info.ToProduct(company, uuid: productUuid);
 
-        var updatedProduct = await _repo.UpdateProductAsync(product);
+        var updatedProduct = await _repo.UpdateProductAsync(productUuid, product);
         return updatedProduct.ToDto();
     }
 
-    public async Task<ProductDto?> DeleteProductAsync(int productId)
+    public async Task<ProductDto?> DeleteProductAsync(string productUuid)
     {
-        if (_repo.GetProduct(productId) == null)
+        if (await _repo.GetProductAsync(productUuid) == null)
             return null;
 
-        var deletedProduct = await _repo.DeleteProductAsync(productId);
+        var deletedProduct = await _repo.DeleteProductAsync(productUuid);
 
         return deletedProduct.ToDto();
     }

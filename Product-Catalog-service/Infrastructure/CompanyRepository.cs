@@ -27,32 +27,61 @@ public class CompanyRepository(ProductDbContext context) : ICompanyRepository
         return await _context.Companies.FindAsync(id);
     }
 
-    public async Task<Company?> UpdateCompanyAsync(Company info)
+    public async Task<Company?> GetCompanyAsync(string uuid)
     {
-        var product = await _context.Companies.FindAsync(info.Id);
-
-        if (product == null)
-            return null;
-
-        product.Name = info.Name;
-        product.Products = info.Products;
-
-        await _context.SaveChangesAsync();
-
-        return product;
+        return await _context.Companies.FirstOrDefaultAsync(company => company.Uuid == uuid);
     }
 
-    public async Task<Company?> DeleteCompanyAsync(int id)
+    public async Task<Company> UpdateCompanyAsync(int id, Company info)
     {
-        var product = _context.Companies.SingleOrDefault(product => product.Id == id);
+        var company = await GetCompanyAsync(id);
 
-        if (product == null)
-            return null;
+        return await UpdateCompanyInternalAsync(company, info);
+    }
 
-        _context.Remove(product);
+    public async Task<Company> UpdateCompanyAsync(string uuid, Company info)
+    {
+        var company = await GetCompanyAsync(uuid);
+
+        return await UpdateCompanyInternalAsync(company, info);
+    }
+
+    public async Task<Company> DeleteCompanyAsync(int id)
+    {
+        var company = await GetCompanyAsync(id);
+
+        return await DeleteCompanyInternalAsync(company);
+    }
+
+    public async Task<Company> DeleteCompanyAsync(string uuid)
+    {
+        var company = await GetCompanyAsync(uuid);
+
+        return await DeleteCompanyInternalAsync(company);
+    }
+
+    private async Task<Company> UpdateCompanyInternalAsync(Company? company, Company info)
+    {
+        if (company == null)
+            throw new Exception("Invalid company id provided");
+
+        company.Name = info.Name;
+        company.Products = info.Products;
 
         await _context.SaveChangesAsync();
 
-        return product;
+        return company;
+    }
+
+    private async Task<Company> DeleteCompanyInternalAsync(Company? company)
+    {
+        if (company == null)
+            throw new Exception("Invalid company id provided");
+
+        _context.Remove(company);
+
+        await _context.SaveChangesAsync();
+
+        return company;
     }
 }

@@ -9,9 +9,9 @@ public class LoginRegisterService(IUserService userService, IPasswordHashService
     private readonly IUserService _userService = userService;
     private readonly IPasswordHashService _hashService = hashService;
 
-    public string? LoginUser(UserLoginCredentialDto credentials)
+    public async Task<string?> LoginUserAsync(UserLoginCredentialDto credentials)
     {
-        List<UserInfoDto> users = _userService.GetAllUsers();
+        List<UserInfoDto> users = await _userService.GetAllUsersAsync();
         var foundUser = users.FirstOrDefault(user => user.Email == credentials.Email);
 
         if (foundUser == null)
@@ -25,7 +25,7 @@ public class LoginRegisterService(IUserService userService, IPasswordHashService
 
     public async Task<string?> RegisterUserAsync(UserRegisterCredentialDto credentials)
     {
-        List<UserInfoDto> users = _userService.GetAllUsers();
+        List<UserInfoDto> users = await _userService.GetAllUsersAsync();
 
         if (users.FirstOrDefault(user => user.Email == credentials.Email) != null)
             return null;

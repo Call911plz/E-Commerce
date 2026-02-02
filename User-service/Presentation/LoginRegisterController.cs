@@ -10,9 +10,9 @@ public class LoginRegisterController(ILoginRegisterService loginService) : Contr
     private readonly ILoginRegisterService _loginService = loginService;
 
     [HttpGet("login")]
-    public ActionResult<string> Login(UserLoginCredentialDto credentials)
+    public async Task<ActionResult<string>> Login(UserLoginCredentialDto credentials)
     {
-        var jwt = _loginService.LoginUser(credentials);
+        var jwt = await _loginService.LoginUserAsync(credentials);
         if (jwt == null)
             return Unauthorized("Incorrect email or password");
         return Ok(jwt);

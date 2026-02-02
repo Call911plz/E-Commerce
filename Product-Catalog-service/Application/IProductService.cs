@@ -2,10 +2,14 @@ namespace ProductCatalogMicroService.Application;
 
 public interface IProductService
 {
-    public Task<ProductDto> CreateProductAsync(int companyId, ProductDto info);
-    public List<ProductDto> GetAllProducts();
-    public Task<CompanyProductsDto> GetAllCompanyProductsAsync(int companyId);
-    public ProductDto? GetProductDto(int productId);
-    public Task<ProductDto?> UpdateProductAsync(int companyId, int productId, ProductDto info);
-    public Task<ProductDto?> DeleteProductAsync(int productId);
+    public Task<ProductDto> CreateProductAsync(string companyUuid, ProductDto info);
+    public Task<List<ProductDto>> GetAllProductsAsync();
+    public Task<CompanyProductsDto> GetAllCompanyProductsAsync(string companyUuid);
+    public Task<ProductDto?> GetProductDtoAsync(string productUuid);
+    public Task<ProductDto?> UpdateProductAsync(
+        string companyUuid,
+        string productUuid,
+        ProductDto info
+    );
+    public Task<ProductDto?> DeleteProductAsync(string productUuid);
 }
