@@ -4,7 +4,7 @@ public class Product
 {
     public int Id { get; set; }
     public Company Company { get; set; } = null!;
-    public string PublicHash { get; set; } = string.Empty;
+    public string Uuid { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public float Cost { get; set; }
     public string Description { get; set; } = string.Empty;
@@ -14,6 +14,7 @@ public class Product
 public class Company
 {
     public int Id { get; set; }
+    public string Uuid { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public ICollection<Product> Products { get; set; } = [];
 }

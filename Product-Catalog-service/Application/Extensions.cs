@@ -9,19 +9,24 @@ public static class ProductExtensions
         return new ProductDto
         {
             Name = info.Name,
-            PublicHash = info.PublicHash,
+            Uuid = info.Uuid,
             Cost = info.Cost,
             Description = info.Description,
         };
     }
 
-    public static Product ToProduct(this ProductDto dto, Company company, int id = default)
+    public static Product ToProduct(
+        this ProductDto dto,
+        Company company,
+        int id = default,
+        string uuid = ""
+    )
     {
         return new Product
         {
             Id = id,
             Company = company,
-            PublicHash = dto.PublicHash,
+            Uuid = uuid,
             Name = dto.Name,
             Cost = dto.Cost,
             Description = dto.Description,
@@ -46,11 +51,16 @@ public static class CompanyExtensions
 {
     public static CompanyDto ToDto(this Company info)
     {
-        return new CompanyDto { Name = info.Name };
+        return new CompanyDto { Uuid = info.Uuid, Name = info.Name };
     }
 
-    public static Company ToCompany(this CompanyDto dto, int id = default)
+    public static Company ToCompany(this CompanyDto dto, int id = default, string uuid = "")
     {
-        return new Company { Id = id, Name = dto.Name };
+        return new Company
+        {
+            Id = id,
+            Uuid = uuid,
+            Name = dto.Name,
+        };
     }
 }

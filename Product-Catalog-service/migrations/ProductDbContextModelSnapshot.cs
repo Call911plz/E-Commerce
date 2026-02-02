@@ -33,6 +33,10 @@ namespace Product_Catalog_service.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Uuid")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
@@ -60,7 +64,7 @@ namespace Product_Catalog_service.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PublicHash")
+                    b.Property<string>("Uuid")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -74,12 +78,17 @@ namespace Product_Catalog_service.migrations
             modelBuilder.Entity("ProductCatalogMicroService.Domain.Product", b =>
                 {
                     b.HasOne("ProductCatalogMicroService.Domain.Company", "Company")
-                        .WithMany()
+                        .WithMany("Products")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("ProductCatalogMicroService.Domain.Company", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

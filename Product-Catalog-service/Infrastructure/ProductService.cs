@@ -17,8 +17,10 @@ public class ProductService(
         var company =
             await _companyRepository.GetCompanyAsync(companyId)
             ?? throw new Exception("Invalid company Id given");
-        var product = info.ToProduct(company);
 
+        // Building product to insert
+        var uuid = Guid.NewGuid().ToString();
+        var product = info.ToProduct(company, uuid: uuid);
         var createdProduct = await _repo.CreateProductAsync(company, product);
 
         return createdProduct.ToDto();

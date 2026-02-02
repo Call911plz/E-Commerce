@@ -4,7 +4,7 @@ namespace ProductCatalogMicroService.Application;
 
 public class ProductDto
 {
-    public string PublicHash { get; set; } = string.Empty;
+    public string Uuid { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public float Cost { get; set; }
     public string Description { get; set; } = string.Empty;
@@ -14,7 +14,7 @@ public class ProductInfoDto
 {
     public int Id { get; set; }
     public Company Company { get; set; } = new Company();
-    public string PublicHash { get; set; } = string.Empty;
+    public string Uuid { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public float Cost { get; set; }
     public string Description { get; set; } = string.Empty;
@@ -22,6 +22,7 @@ public class ProductInfoDto
 
 public class CompanyDto
 {
+    public string Uuid { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
 }
 

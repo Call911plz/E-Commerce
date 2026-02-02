@@ -8,8 +8,10 @@ public class CompanyService(ICompanyRepository companyRepository) : ICompanyServ
 
     public async Task<CompanyDto> CreateCompanyAsync(CompanyDto info)
     {
-        var company = await _repo.CreateCompanyAsync(info.ToCompany());
-        return company.ToDto();
+        var uuid = Guid.NewGuid().ToString();
+        var company = info.ToCompany(uuid: uuid);
+        var createdCompany = await _repo.CreateCompanyAsync(company);
+        return createdCompany.ToDto();
     }
 
     public async Task<List<CompanyDto>> GetAllCompaniesAsync()
