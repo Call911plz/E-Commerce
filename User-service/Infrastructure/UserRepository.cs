@@ -26,12 +26,12 @@ public class UserRepository(UserDbContext context) : IUserRepository
         return _context.Users.Find(id);
     }
 
-    public async Task<UserInfo?> UpdateUserAsync(UserInfo info)
+    public async Task<UserInfo> UpdateUserAsync(UserInfo info)
     {
-        var user = await _context.Users.FindAsync(info.Id);
-
-        if (user == null)
-            return null;
+        // Throwing error since user should have been checked before hand.
+        var user =
+            await _context.Users.FindAsync(info.Id)
+            ?? throw new Exception("Invalid User id provided");
 
         user.Username = info.Username;
         user.Password = info.Password;
@@ -41,12 +41,10 @@ public class UserRepository(UserDbContext context) : IUserRepository
         return user;
     }
 
-    public async Task<UserInfo?> DeleteUserAsync(int id)
+    public async Task<UserInfo> DeleteUserAsync(int id)
     {
-        var user = _context.Users.SingleOrDefault(user => user.Id == id);
-
-        if (user == null)
-            return null;
+        var user =
+            await _context.Users.FindAsync(id) ?? throw new Exception("Invalid User id provided");
 
         _context.Remove(user);
 
