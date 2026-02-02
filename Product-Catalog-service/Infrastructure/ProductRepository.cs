@@ -30,12 +30,12 @@ public class ProductRepository(ProductDbContext context) : IProductRepository
         return _context.Products.Find(id);
     }
 
-    public async Task<Product?> UpdateProductAsync(Product info)
+    public async Task<Product> UpdateProductAsync(Product info)
     {
-        var product = await _context.Products.FindAsync(info.Id);
-
-        if (product == null)
-            return null;
+        // Throwing error since product should have been checked before hand.
+        var product =
+            await _context.Products.FindAsync(info.Id)
+            ?? throw new Exception("Invalid product provided");
 
         product.Company = info.Company;
         product.Name = info.Name;
@@ -47,12 +47,11 @@ public class ProductRepository(ProductDbContext context) : IProductRepository
         return product;
     }
 
-    public async Task<Product?> DeleteProductAsync(int id)
+    public async Task<Product> DeleteProductAsync(int id)
     {
-        var product = _context.Products.SingleOrDefault(product => product.Id == id);
-
-        if (product == null)
-            return null;
+        var product =
+            await _context.Products.FindAsync(id)
+            ?? throw new Exception("Invalid product provided");
 
         _context.Remove(product);
 

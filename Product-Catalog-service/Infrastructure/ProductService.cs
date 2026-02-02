@@ -57,15 +57,23 @@ public class ProductService(
         var company =
             await _companyRepository.GetCompanyAsync(companyId)
             ?? throw new Exception("Invalid company Id given");
-        var product = info.ToProduct(company);
+
+        if (_repo.GetProduct(productId) == null)
+            return null;
+
+        var product = info.ToProduct(company, productId);
 
         var updatedProduct = await _repo.UpdateProductAsync(product);
-        return (updatedProduct == null) ? null : updatedProduct.ToDto();
+        return updatedProduct.ToDto();
     }
 
     public async Task<ProductDto?> DeleteProductAsync(int productId)
     {
+        if (_repo.GetProduct(productId) == null)
+            return null;
+
         var deletedProduct = await _repo.DeleteProductAsync(productId);
-        return (deletedProduct == null) ? null : deletedProduct.ToDto();
+
+        return deletedProduct.ToDto();
     }
 }
