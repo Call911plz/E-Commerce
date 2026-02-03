@@ -8,34 +8,34 @@ public class UserService(IUserRepository userRepository) : IUserService
 
     public async Task<UserInfoDto> CreateUserAsync(UserInfoDto info)
     {
-        var user = await _repo.CreateUserAsync(info.ToInfo());
+        var user = await _repo.CreateUserAsync(info.ToInfo(uuid: Guid.NewGuid().ToString()));
         return user.ToDto();
     }
 
-    public List<UserInfoDto> GetAllUsers()
+    public async Task<List<UserInfoDto>> GetAllUsersAsync()
     {
-        var users = _repo.GetAllUsers();
+        var users = await _repo.GetAllUsersAsync();
 
         return users.Select(user => user.ToDto()).ToList();
     }
 
-    public UserInfoDto? GetUserInfoDto(int id)
+    public async Task<UserInfoDto?> GetUserInfoDtoAsync(string uuid)
     {
-        var user = _repo.GetUserInfo(id);
+        var user = await _repo.GetUserInfoAsync(uuid);
 
         return (user == null) ? null : user.ToDto();
     }
 
-    public async Task<UserInfoDto?> UpdateUserAsync(int id, UserInfoDto info)
+    public async Task<UserInfoDto?> UpdateUserAsync(string uuid, UserInfoDto info)
     {
-        var user = await _repo.UpdateUserAsync(info.ToInfo(id));
+        var user = await _repo.UpdateUserAsync(uuid, info.ToInfo(uuid: uuid));
 
         return (user == null) ? null : user.ToDto();
     }
 
-    public async Task<UserInfoDto?> DeleteUserAsync(int id)
+    public async Task<UserInfoDto?> DeleteUserAsync(string uuid)
     {
-        var user = await _repo.DeleteUserAsync(id);
+        var user = await _repo.DeleteUserAsync(uuid);
 
         return (user == null) ? null : user.ToDto();
     }

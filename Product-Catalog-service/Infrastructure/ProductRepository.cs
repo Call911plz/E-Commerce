@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ProductCatalogMicroService.Application;
 using ProductCatalogMicroService.Domain;
 
@@ -9,33 +10,61 @@ public class ProductRepository(ProductDbContext context) : IProductRepository
 
     public async Task<Product> CreateProductAsync(Company company, Product info)
     {
-        // company.Products.Add(info);
         info.Company = company;
         var result = await _context.Products.AddAsync(info);
-        // var result = _context.Products.Add(info);
 
         await _context.SaveChangesAsync();
 
-        // return info;
         return result.Entity;
     }
 
-    public List<Product> GetAllProducts()
+    public async Task<List<Product>> GetAllProductsAsync()
     {
-        return _context.Products.ToList();
+        return await _context.Products.ToListAsync();
     }
 
-    public Product? GetProduct(int id)
+    public async Task<Product?> GetProductAsync(int id)
     {
-        return _context.Products.Find(id);
+        return await _context.Products.FindAsync(id);
     }
 
-    public async Task<Product> UpdateProductAsync(Product info)
+    public async Task<Product?> GetProductAsync(string uuid)
     {
-        // Throwing error since product should have been checked before hand.
-        var product =
-            await _context.Products.FindAsync(info.Id)
-            ?? throw new Exception("Invalid product provided");
+        return await _context.Products.FirstOrDefaultAsync(product => product.Uuid == uuid);
+    }
+
+    public async Task<Product> UpdateProductAsync(int id, Product info)
+    {
+        var product = await GetProductAsync(id);
+
+        return await UpdateProductInternalAsync(product, info);
+    }
+
+    public async Task<Product> UpdateProductAsync(string uuid, Product info)
+    {
+        var product = await GetProductAsync(uuid);
+
+        return await UpdateProductInternalAsync(product, info);
+    }
+
+    public async Task<Product> DeleteProductAsync(int id)
+    {
+        var product = await GetProductAsync(id);
+
+        return await DeleteProductInternalAsync(product);
+    }
+
+    public async Task<Product> DeleteProductAsync(string uuid)
+    {
+        var product = await GetProductAsync(uuid);
+
+        return await DeleteProductInternalAsync(product);
+    }
+
+    private async Task<Product> UpdateProductInternalAsync(Product? product, Product info)
+    {
+        if (product == null)
+            throw new Exception("Invalid Product id provided");
 
         product.Company = info.Company;
         product.Name = info.Name;
@@ -47,11 +76,10 @@ public class ProductRepository(ProductDbContext context) : IProductRepository
         return product;
     }
 
-    public async Task<Product> DeleteProductAsync(int id)
+    private async Task<Product> DeleteProductInternalAsync(Product? product)
     {
-        var product =
-            await _context.Products.FindAsync(id)
-            ?? throw new Exception("Invalid product provided");
+        if (product == null)
+            throw new Exception("Invalid Product id provided");
 
         _context.Remove(product);
 

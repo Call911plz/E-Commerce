@@ -8,8 +8,10 @@ public class CompanyService(ICompanyRepository companyRepository) : ICompanyServ
 
     public async Task<CompanyDto> CreateCompanyAsync(CompanyDto info)
     {
-        var company = await _repo.CreateCompanyAsync(info.ToCompany());
-        return company.ToDto();
+        var uuid = Guid.NewGuid().ToString();
+        var company = info.ToCompany(uuid: uuid);
+        var createdCompany = await _repo.CreateCompanyAsync(company);
+        return createdCompany.ToDto();
     }
 
     public async Task<List<CompanyDto>> GetAllCompaniesAsync()
@@ -26,9 +28,23 @@ public class CompanyService(ICompanyRepository companyRepository) : ICompanyServ
         return (company == null) ? null : company.ToDto();
     }
 
+    public async Task<CompanyDto?> GetCompanyDtoAsync(string uuid)
+    {
+        var company = await _repo.GetCompanyAsync(uuid);
+
+        return (company == null) ? null : company.ToDto();
+    }
+
     public async Task<CompanyDto?> UpdateCompanyAsync(int id, CompanyDto info)
     {
-        var company = await _repo.UpdateCompanyAsync(info.ToCompany(id));
+        var company = await _repo.UpdateCompanyAsync(id, info.ToCompany(id));
+
+        return (company == null) ? null : company.ToDto();
+    }
+
+    public async Task<CompanyDto?> UpdateCompanyAsync(string uuid, CompanyDto info)
+    {
+        var company = await _repo.UpdateCompanyAsync(uuid, info.ToCompany());
 
         return (company == null) ? null : company.ToDto();
     }
@@ -36,6 +52,13 @@ public class CompanyService(ICompanyRepository companyRepository) : ICompanyServ
     public async Task<CompanyDto?> DeleteCompanyAsync(int id)
     {
         var company = await _repo.DeleteCompanyAsync(id);
+
+        return (company == null) ? null : company.ToDto();
+    }
+
+    public async Task<CompanyDto?> DeleteCompanyAsync(string uuid)
+    {
+        var company = await _repo.DeleteCompanyAsync(uuid);
 
         return (company == null) ? null : company.ToDto();
     }

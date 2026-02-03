@@ -16,26 +16,26 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<UserInfoDto>> GetAllUsers()
+    public async Task<ActionResult<List<UserInfoDto>>> GetAllUsers()
     {
-        return Ok(_userService.GetAllUsers());
+        return Ok(await _userService.GetAllUsersAsync());
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<UserInfoDto>? GetUserInfoDto(int id)
+    [HttpGet("{userUuid}")]
+    public async Task<ActionResult<UserInfoDto>?> GetUserInfoDto(string userUuid)
     {
-        return Ok(_userService.GetUserInfoDto(id));
+        return Ok(await _userService.GetUserInfoDtoAsync(userUuid));
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<UserInfoDto>?> UpdateUserAsync(int id, UserInfoDto info)
+    [HttpPut("{userUuid}")]
+    public async Task<ActionResult<UserInfoDto>?> UpdateUserAsync(string userUuid, UserInfoDto info)
     {
-        return Ok(await _userService.UpdateUserAsync(id, info));
+        return Ok(await _userService.UpdateUserAsync(userUuid, info));
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<UserInfoDto>?> DeleteUserAsync(int id)
+    [HttpDelete("{userUuid}")]
+    public async Task<ActionResult<UserInfoDto>?> DeleteUserAsync(string userUuid)
     {
-        return Ok(await _userService.DeleteUserAsync(id));
+        return Ok(await _userService.DeleteUserAsync(userUuid));
     }
 }

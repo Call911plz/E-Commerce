@@ -21,21 +21,48 @@ public class CompanyController(ICompanyService companyService) : ControllerBase
         return Ok(await _companyService.GetAllCompaniesAsync());
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<CompanyDto>?> GetCompanyDto(int id)
+    // [HttpGet("{id}")]
+    // public async Task<ActionResult<CompanyDto>?> GetCompanyDto(int id)
+    // {
+    //     return Ok(await _companyService.GetCompanyDtoAsync(id));
+    // }
+
+    [HttpGet("{uuid}")]
+    public async Task<ActionResult<CompanyDto>?> GetCompanyDto(string uuid)
     {
-        return Ok(await _companyService.GetCompanyDtoAsync(id));
+        if (await _companyService.GetCompanyDtoAsync(uuid) == null)
+            return NotFound("Company not found");
+
+        return Ok(await _companyService.GetCompanyDtoAsync(uuid));
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<CompanyDto>?> UpdateCompanyAsync(int id, CompanyDto info)
+    // [HttpPut("{id}")]
+    // public async Task<ActionResult<CompanyDto>?> UpdateCompanyAsync(int id, CompanyDto info)
+    // {
+    //     return Ok(await _companyService.UpdateCompanyAsync(id, info));
+    // }
+
+    [HttpPut("{uuid}")]
+    public async Task<ActionResult<CompanyDto>?> UpdateCompanyAsync(string uuid, CompanyDto info)
     {
-        return Ok(await _companyService.UpdateCompanyAsync(id, info));
+        if (await _companyService.GetCompanyDtoAsync(uuid) == null)
+            return NotFound("Company not found");
+
+        return Ok(await _companyService.UpdateCompanyAsync(uuid, info));
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<CompanyDto>?> DeleteCompanyAsync(int id)
+    // [HttpDelete("{id}")]
+    // public async Task<ActionResult<CompanyDto>?> DeleteCompanyAsync(int id)
+    // {
+    //     return Ok(await _companyService.DeleteCompanyAsync(id));
+    // }
+
+    [HttpDelete("{uuid}")]
+    public async Task<ActionResult<CompanyDto>?> DeleteCompanyAsync(string uuid)
     {
-        return Ok(await _companyService.DeleteCompanyAsync(id));
+        if (await _companyService.GetCompanyDtoAsync(uuid) == null)
+            return NotFound("Company not found");
+
+        return Ok(await _companyService.DeleteCompanyAsync(uuid));
     }
 }

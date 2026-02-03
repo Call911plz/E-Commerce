@@ -6,8 +6,8 @@ public class CompanyValidationService(ICompanyService companyService) : ICompany
 {
     private readonly ICompanyService _companyService = companyService;
 
-    public async Task<bool> ValidateCompanyAsync(int id)
+    public async Task<bool> ValidateCompanyAsync(string uuid)
     {
-        return (await _companyService.GetCompanyDtoAsync(id) != null);
+        return (await _companyService.GetCompanyDtoAsync(uuid) != null);
     }
 }
