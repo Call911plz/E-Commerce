@@ -6,26 +6,30 @@ services:
       - "1433:1433"
     environment:
       ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: 12345678@aA
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
 
   user-service:
     build:
       context: ./User-service
       dockerfile: dockerfile
     ports:
-      - "8001:8080"
+      - "${USER_MICROSERVICE_PORT}:8080"
     post_start:
       - command: dotnet ef database update
     depends_on:
       mssqlDb:
         condition: service_started
+    environment:
+      USER_MICROSERVICE: ${USER_MICROSERVICE}
+      CART_MICROSERVICE: ${CART_MICROSERVICE}
+      ACCESS_TOKEN_SECRET_KEY: ${ACCESS_TOKEN_SECRET_KEY}
 
   product-catalog-service:
     build:
       context: ./Product-Catalog-service
       dockerfile: dockerfile
     ports:
-      - "8002:8080"
+      - "${PRODUCT_MICROSERVICE_PORT}:8080"
     post_start:
       - command: dotnet ef database update
     depends_on:
