@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Jwt_service";
+
+package greet;
+
+service AccessToken {
+  rpc SignAccessToken (TokenRequest) returns (SignedTokenReply);
+}
+
+message TokenRequest {
+  string aud = 1;
+}
+
+message SignedTokenReply {
+  string token = 1;
+}

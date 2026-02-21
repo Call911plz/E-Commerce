@@ -86,7 +86,7 @@ sequenceDiagram
 	alt new user
 		UM ->> UDB: Store new user
 		UM ->> JWT: GET /auth/access, aud=user_service, internalAccessToken=""
-		JWT <<->> UM: ...(See GET /auth/access)
+		JWT <<->> UM: ...
 		JWT ->> UM: 200: accessToken=""
 		UM ->> JWT: GET /auth/access, aud=cart_service, internalAccessToken=""
 		JWT <<->> UM: ...
